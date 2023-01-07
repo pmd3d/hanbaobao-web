@@ -22,7 +22,16 @@ dotnet run -c Release
 
 After doing so, open a browser to http://localhost:5000 to play with the app.
 
+https://pmd3d-fantastic-funicular-jw6wg4g952jp6j-5000.preview.app.github.dev/api/search?query=hao
+npm install -g @angular/cli
+ng new my-app
+cd my-app
+ng serve --open
+ng serve --open --disable-host-check
+ng build --watch in my-app folder...
+
 The app can also be deployed to Kubernetes. The important file is `deployment.yaml`, which describes the required Kubernetes resources. Before deploying the app, you will need to provision the following resources:
+The more current way of this is to update the outDir property in angular.json(called .angular-cli.json in old Angular CLI versions).
 
 * A resource group
 * An Azure Container Registry (ACR) container registry

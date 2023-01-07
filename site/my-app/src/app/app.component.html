@@ -1,0 +1,12 @@
+<label for="userText">English word:</label>
+<input id="userText" [formControl]="userText" (keyDown.Enter)="getSomething()">
+<button (click)="getSomething()">Call it</button>
+<ul>
+    <h3>Lookup Results <p *ngIf="requesting">(Loading)</p></h3>
+        <li *ngFor="let w of words | async">
+            {{ w.pinyin }}
+        </li>
+        <li *ngFor="let w of immediateWords">
+            {{ w.pinyin }}
+        </li>
+</ul>
