@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { of, map, Observable, switchMap, filter, distinctUntilChanged, debounceTime, tap } from 'rxjs';
+import { of, map, Observable, switchMap, filter, distinctUntilChanged, debounceTime, tap, merge } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,13 +11,15 @@ import { of, map, Observable, switchMap, filter, distinctUntilChanged, debounceT
 export class AppComponent {
   title = 'my-app';
   userText = new FormControl("");
+  delayedWords : Observable<Word[]>;
+  immediateWords : Observable<Word[]>;
   words : Observable<Word[]>;
-  immediateWords : Word[] = [];
   requesting : boolean = false;
   readonly defaultDelay : number = 1000;
 
-  constructor(private http : HttpClient) { 
-    this.words = this.userText.valueChanges.pipe(
+  constructor(private http : HttpClient) {
+    this.immediateWords = of([]); 
+    this.delayedWords = this.userText.valueChanges.pipe(
       filter((word, index) => { return word !== null; }),
       map(word => word?.trim()),
       filter((word, index) => { return word !== ""; }),
@@ -32,15 +34,17 @@ export class AppComponent {
         this.requesting = false;
       }) 
     );
+    this.words = merge(this.immediateWords, this.delayedWords);
   }
 
   getSomething() {
-    this.http
-      .get<Word[]>("api/search?query=" + this.userText.value)
-      .subscribe((words) => 
-      {
-        this.immediateWords = words;
-      });
+    if (this.userText.value?.trim() !== "")
+      this.immediateWords = this.http
+        .get<Word[]>("api/search?query=" + this.userText.value);
+  }
+
+  ngOnDestroy() {
+    console.log("cleaning up");
   }
 }
 
