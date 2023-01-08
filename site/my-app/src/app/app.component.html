@@ -7,3 +7,12 @@
             {{ w.pinyin }}
         </li>
 </ul>
+<label for="userText2">English word:</label>
+<input id="userText2" [(ngModel)]="userModelWord" name="userText2" (keyup)="onKey($event)" (keyDown.Enter)="getSomething2(userWord.value)" #userWord>
+<button (click)="getSomething2(userWord.value)">Call it</button>
+<ul>
+    <h3>Lookup Results <p *ngIf="requesting">(Loading)</p></h3>
+        <li *ngFor="let w of words2">
+            {{ w.pinyin }}
+        </li>
+</ul>

@@ -20,9 +20,9 @@ namespace HanBaoBao
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetByQuery(string query)
+        public async Task<IActionResult> GetByQuery(string myquery)
         {
-            if (string.IsNullOrWhiteSpace(query))
+            if (string.IsNullOrWhiteSpace(myquery))
             {
                 return BadRequest("Provided an empty query");
             }
@@ -34,7 +34,7 @@ namespace HanBaoBao
             var userAgentGrain = _grainFactory.GetGrain<IUserAgentGrain>(clientId);
             try
             {
-                var results = await userAgentGrain.GetSearchResultsAsync(query);
+                var results = await userAgentGrain.GetSearchResultsAsync(myquery);
                 return Ok(results);
             }
             catch (ThrottlingException exc)
