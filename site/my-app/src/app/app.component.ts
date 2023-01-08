@@ -11,18 +11,19 @@ import { of, map, Observable, switchMap, filter, distinctUntilChanged, debounceT
 export class AppComponent {
   title = 'my-app';
   userText = new FormControl("");
-  delayedWords : Observable<Word[]>;
   immediateWords : Observable<Word[]>;
   userModelWord : String = "";
   words : Observable<Word[]>;
-  words2 : Word[] = [];
+  words2 : Observable<Word[]>;
   requesting : boolean = false;
   readonly defaultDelay : number = 1000;
   templateConductor : Subject<string>;
 
   constructor(private http : HttpClient) {
     this.immediateWords = of([]); 
-    this.delayedWords = this.userText.valueChanges.pipe(
+
+    this.templateConductor = new Subject();
+    this.words2 = this.templateConductor.pipe(
       filter((word, index) => { return word !== null; }),
       map(word => word?.trim()),
       filter((word, index) => { return word !== ""; }),
@@ -30,27 +31,15 @@ export class AppComponent {
       distinctUntilChanged(),
       switchMap((word, index) => {
         this.requesting = true;
-        return this.http
-          .get<Word[]>("api/search?myquery=" + word)
+        return this.http.get<Word[]>("api/search?myquery=" + word);
       }),
       tap((word) => { 
         this.requesting = false;
-      })       
-    );
-    this.words = merge(this.immediateWords, this.delayedWords);
+      }));
 
-    this.templateConductor = new Subject();
-    this.templateConductor.pipe(
-      filter((word, index) => { return word !== null; }),
-      map(word => word?.trim()),
-      filter((word, index) => { return word !== ""; }),
-      debounceTime(this.defaultDelay),
-      distinctUntilChanged())
-      .subscribe((word : string) => {
-        this.http.get<Word[]>("api/search?myquery=" + word)
-        .subscribe(wordArray => { this.words2 = wordArray; })
-      }
-      );
+    this.words = merge(this.immediateWords, this.words2);
+
+    this.userText.valueChanges.subscribe((word) => { if (word !== null) this.templateConductor.next(word); });
   }
 
   getSomething() {
@@ -59,23 +48,21 @@ export class AppComponent {
         .get<Word[]>("api/search?myquery=" + this.userText.value);
   }
 
-  getSomething2(word : string) {
-    if (word?.trim() !== "")
-      this.http
-        .get<Word[]>("api/search?myquery=" + word)
-        .subscribe(wordArray => { this.words2 = wordArray; });
-  }
+  // getSomething2(word : string) {
+  //   if (word?.trim() !== "")
+  //     this.words2 = this.http
+  //       .get<Word[]>("api/search?myquery=" + word);
+  // }
 
-  onKey(event: any) {
-    const word : string = event.target.value;
-    this.templateConductor.next(word);
-    console.log("pushing " + word);
-  }
+  // onKey(event: any) {
+  //   const word : string = event.target.value;
+  //   this.templateConductor.next(word);
+  //   console.log("pushing " + word);
+  // }
 
-  ngOnDestroy() {
-    console.log("cleaning up");
-    this.templateConductor.unsubscribe();
-  }
+  // ngOnDestroy() {
+  //   console.log("cleaning up");
+  // }
 }
 
 export interface Word {
