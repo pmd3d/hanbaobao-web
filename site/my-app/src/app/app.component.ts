@@ -1,7 +1,7 @@
 import { Component, EventEmitter } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { of, map, Observable, switchMap, filter, distinctUntilChanged, debounceTime, tap, merge, Subject } from 'rxjs';
+import { of, map, Observable, switchMap, filter, distinctUntilChanged, debounceTime, tap, merge, Subject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -12,12 +12,12 @@ export class AppComponent {
   title = 'my-app';
   userText = new FormControl("");
   immediateWords : Observable<Word[]>;
-  userModelWord : String = "";
   words : Observable<Word[]>;
   words2 : Observable<Word[]>;
   requesting : boolean = false;
   readonly defaultDelay : number = 1000;
-  templateConductor : Subject<string>;
+  templateConductor : Subject<string>; // playing around with idea of putting a subject in service later and then broadcasting changes to other component...
+  charChangesSubscription : Subscription;
 
   constructor(private http : HttpClient) {
     this.immediateWords = of([]); 
@@ -39,7 +39,7 @@ export class AppComponent {
 
     this.words = merge(this.immediateWords, this.words2);
 
-    this.userText.valueChanges.subscribe((word) => { if (word !== null) this.templateConductor.next(word); });
+    this.charChangesSubscription = this.userText.valueChanges.subscribe((word) => { if (word !== null) this.templateConductor.next(word); });
   }
 
   getSomething() {
@@ -48,21 +48,10 @@ export class AppComponent {
         .get<Word[]>("api/search?myquery=" + this.userText.value);
   }
 
-  // getSomething2(word : string) {
-  //   if (word?.trim() !== "")
-  //     this.words2 = this.http
-  //       .get<Word[]>("api/search?myquery=" + word);
-  // }
-
-  // onKey(event: any) {
-  //   const word : string = event.target.value;
-  //   this.templateConductor.next(word);
-  //   console.log("pushing " + word);
-  // }
-
-  // ngOnDestroy() {
-  //   console.log("cleaning up");
-  // }
+  ngOnDestroy() {
+    this.charChangesSubscription.unsubscribe();
+    console.log("cleaning up");
+  }
 }
 
 export interface Word {
