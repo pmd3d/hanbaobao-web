@@ -22,7 +22,6 @@ dotnet run -c Release
 
 After doing so, open a browser to http://localhost:5000 to play with the app.
 
-https://pmd3d-fantastic-funicular-jw6wg4g952jp6j-5000.preview.app.github.dev/api/search?query=hao
 npm install -g @angular/cli
 ng new my-app
 cd my-app
