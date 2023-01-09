@@ -7,12 +7,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchComponent } from './search.component';
 import { DetailComponent } from './detail.component';
+import { GetWordPipe } from './GetWord.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     SearchComponent,
-    DetailComponent
+    DetailComponent,
+    GetWordPipe
   ],
   imports: [
     BrowserModule,

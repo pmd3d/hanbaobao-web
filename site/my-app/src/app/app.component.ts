@@ -12,9 +12,14 @@ import { Word } from './search.component';
 export class AppComponent {
   title = 'my-app';
   lookupResults : Word[] = [];
+  word : string = "";
 
   onLookup(words : Word[]) {
     console.log("received message");
     this.lookupResults = words;
+  }
+
+  onKeyUp(word : string) {
+    this.word = word;
   }
 }

@@ -1,2 +1,4 @@
 <search (words)="onLookup($event)"></search>
 <definitions [words]="lookupResults"></definitions>
+<label for="userText">English word:</label><input id="userText" (keyup)="onKeyUp(userWord.value)" #userWord>
+<ul><h3>Lookup Results</h3><li *ngFor="let w of word | getPipe | async">{{ w | json }}</li></ul>
