@@ -18,8 +18,4 @@ export class AppComponent {
     console.log("received message");
     this.lookupResults = words;
   }
-
-  onKeyUp(word : string) {
-    this.word = word;
-  }
 }
